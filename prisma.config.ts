@@ -15,6 +15,7 @@ import "dotenv/config";
 
 //https://github.com/prisma/prisma/issues/28590#issuecomment-3570524222
 //https://github.com/prisma/prisma/issues/28597
+// for more context xd
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({

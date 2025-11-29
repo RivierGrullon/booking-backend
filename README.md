@@ -1,98 +1,260 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# BookingApp - Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API for the booking system with Google Calendar integration.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Features
 
-## Description
+- **JWT Authentication** - Auth0 integration with RS256 token validation
+- **Booking Management** - CRUD operations for time slot bookings
+- **Conflict Detection** - Prevents double bookings in the system
+- **Google Calendar Integration** - OAuth2 flow to check calendar conflicts
+- **API Documentation** - Swagger/OpenAPI documentation
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🛠️ Tech Stack
 
-## Project setup
+- **Framework:** NestJS 11
+- **Database:** PostgreSQL 16
+- **ORM:** Prisma 7
+- **Authentication:** Passport JWT + Auth0
+- **Google API:** googleapis
+- **Documentation:** Swagger
 
-```bash
-$ pnpm install
+## 📋 Prerequisites
+
+- Node.js 20+
+- pnpm 9+
+- PostgreSQL 16+ (or Docker)
+- Auth0 account
+- Google Cloud Console project with Calendar API enabled
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# Database
+DATABASE_URL=postgresql://booking_user:booking_pass@localhost:5432/booking_db?schema=public
+
+# Auth0
+AUTH0_ISSUER_URL=https://your-tenant.auth0.com/
+AUTH0_AUDIENCE=your-api-audience
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI=http://localhost:4000/auth/google/callback
+
+# App
+PORT=4000
+FRONTEND_URL=http://localhost:3000
 ```
 
-## Compile and run the project
+## 🚀 Installation
 
 ```bash
-# development
-$ pnpm run start
+# Clone the repository
+git clone https://github.com/your-username/booking-backend.git
+cd booking-backend
 
-# watch mode
-$ pnpm run start:dev
+# Install dependencies
+pnpm install
 
-# production mode
-$ pnpm run start:prod
+# Generate Prisma client
+pnpm prisma:generate
+
+# Run migrations
+pnpm prisma:migrate
+
+# Run in development mode
+pnpm start:dev
 ```
 
-## Run tests
+The API will be available at `http://localhost:4000`
+
+Swagger documentation at `http://localhost:4000/api/docs`
+
+## 🐳 Docker
+
+### Run with Docker Compose (recommended)
 
 ```bash
-# unit tests
-$ pnpm run test
+# Create environment variables file
+cp .env.example .env
 
-# e2e tests
-$ pnpm run test:e2e
+# Build and run (includes PostgreSQL)
+docker compose up --build
 
-# test coverage
-$ pnpm run test:cov
+# Run in background
+docker compose up -d --build
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Manual Docker build
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+docker build -t booking-api .
+docker run -p 4000:4000 --env-file .env booking-api
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 📁 Project Structure
 
-## Resources
+```
+src/
+├── auth/                       # Authentication module
+│   ├── decorators/
+│   │   └── current-user.decorator.ts
+│   ├── guards/
+│   │   └── jwt-auth.guard.ts
+│   ├── strategies/
+│   │   └── jwt.strategy.ts
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   └── auth.service.ts
+├── bookings/                   # Bookings module
+│   ├── dtos/
+│   │   ├── create-booking.ts
+│   │   └── booking-response.ts
+│   ├── bookings.controller.ts
+│   ├── bookings.module.ts
+│   └── bookings.service.ts
+├── google-calendar/            # Google Calendar integration
+│   ├── google-calendar.module.ts
+│   └── google-calendar.service.ts
+├── prisma/                     # Database service
+│   ├── prisma.module.ts
+│   └── prisma.service.ts
+├── app.module.ts
+└── main.ts
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## 📚 API Documentation
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Interactive Swagger documentation available at:
 
-## Support
+```
+http://localhost:4000/api/docs
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🔗 API Endpoints
 
-## Stay in touch
+### Authentication
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/auth/me` | Get current user profile |
+| GET | `/auth/google/connect` | Get Google OAuth URL |
+| GET | `/auth/google/callback` | Google OAuth callback |
+| POST | `/auth/google/disconnect` | Disconnect Google Calendar |
 
-## License
+### Bookings
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/bookings` | List all user bookings |
+| GET | `/bookings/:id` | Get booking by ID |
+| POST | `/bookings` | Create new booking |
+| DELETE | `/bookings/:id` | Delete booking |
+| GET | `/bookings/slots?date=YYYY-MM-DD` | Get slots for a date |
+
+## 📝 API Request/Response Examples
+
+### Create Booking
+
+**Request:**
+```bash
+POST /bookings
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Team Meeting",
+  "startTime": "2024-01-15T10:00:00Z",
+  "endTime": "2024-01-15T11:00:00Z"
+}
+```
+
+**Success Response (201):**
+```json
+{
+  "id": "clx123abc...",
+  "name": "Team Meeting",
+  "startTime": "2024-01-15T10:00:00.000Z",
+  "endTime": "2024-01-15T11:00:00.000Z",
+  "userId": "clx456def...",
+  "createdAt": "2024-01-14T15:30:00.000Z"
+}
+```
+
+**Conflict Response (409):**
+```json
+{
+  "message": "Time slot conflicts with an existing booking in the system",
+  "type": "SYSTEM_CONFLICT",
+  "conflictingBooking": {
+    "id": "clx789ghi...",
+    "name": "Other Meeting",
+    "startTime": "2024-01-15T09:30:00.000Z",
+    "endTime": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+## 🗄️ Database Schema
+
+```prisma
+model User {
+  id                        String    @id @default(cuid())
+  auth0Id                   String    @unique
+  email                     String    @unique
+  name                      String?
+  picture                   String?
+  googleAccessToken         String?
+  googleRefreshToken        String?
+  googleTokenExpiresAt      DateTime?
+  isGoogleCalendarConnected Boolean   @default(false)
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+  bookings                  Booking[]
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  name      String
+  startTime DateTime
+  endTime   DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+```
+
+## 🔐 Auth0 Configuration
+
+1. Create an API in Auth0 Dashboard
+2. Set the **Identifier** (this is your `AUTH0_AUDIENCE`)
+3. Enable **RS256** signing algorithm
+4. The `AUTH0_ISSUER_URL` should be `https://your-tenant.auth0.com/`
+
+## 🔑 Google Calendar Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing
+3. Enable **Google Calendar API**
+4. Create OAuth 2.0 credentials (Web Application)
+5. Add authorized redirect URI: `http://localhost:4000/auth/google/callback`
+6. Copy Client ID and Client Secret to `.env`
+
+## 🧪 Available Scripts
+
+```bash
+pnpm start:dev      # Development with hot reload
+pnpm start:prod     # Production mode
+pnpm build          # Build for production
+pnpm prisma:generate # Generate Prisma client
+pnpm prisma:migrate  # Run database migrations
+pnpm prisma:studio   # Open Prisma Studio
+pnpm test           # Run unit tests
+pnpm test:e2e       # Run e2e tests
+pnpm docker:up      # Start Docker containers
+pnpm docker:down    # Stop Docker containers
+```
