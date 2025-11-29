@@ -5,14 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
-
 
 model User {
   id                        String    @id @default(cuid())
@@ -45,3 +43,7 @@ model Booking {
   @@index([startTime, endTime])
   @@map("bookings")
 }
+
+
+
+// OMG WHAT A HEADACHE THE MAJOR UPDATE BREEAK THE DOCKER FILES LOL STAY IN THE 6 VERSION AS LONG AS YOU CAN 
