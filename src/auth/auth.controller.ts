@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
-// import  { Response } from 'express';
+import  type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -47,7 +47,7 @@ export class AuthController {
   async googleCallback(
     @Query('code') code: string,
     @Query('state') state: string,
-    // @Res() res: Response,
+    @Res() res: Response,
   ) {
     const frontendUrl = this.configService.get('FRONTEND_URL');
 
@@ -61,10 +61,10 @@ export class AuthController {
         new Date(Date.now() + (tokens.expiry_date || 3600000)),
       );
 
-      // res.redirect(`${frontendUrl}/dashboard?google=connected`);
+      res.redirect(`${frontendUrl}/dashboard?google=connected`);
     } catch (error) {
       console.error('Google OAuth error:', error);
-      // res.redirect(`${frontendUrl}/dashboard?google=error`);
+      res.redirect(`${frontendUrl}/dashboard?google=error`);
     }
   }
 
